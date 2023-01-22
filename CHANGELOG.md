@@ -1,4 +1,11 @@
 
+<a id='changelog-0.1.1'></a>
+# 0.1.1 — 2023-01-22
+
+## Added
+
+- Added CI actions on github, cleaned up code to pass all tox checks.
+
 <a id='changelog-0.1.0'></a>
 # 0.1.0 — 2023-01-21
 
