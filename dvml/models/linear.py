@@ -4,12 +4,19 @@ Module for linear models
 import numpy as np
 
 from dvml.models.model import SupervisedGradientModel
+from dvml.optimization.gradient import GradientDescent
 
 
 class LinearRegression(SupervisedGradientModel):
     """
     Placeholder for doc
     """
+
+    DEFAULT_TRAIN_CONF = {
+        "gamma": 0.01,
+        "n_iter": 1000,
+        "verbose": False,
+    }
 
     def __init__(self):
         self.params = None
@@ -33,8 +40,29 @@ class LinearRegression(SupervisedGradientModel):
 
         return np.dot(x_form, self.params)
 
-    def train(self, x_train, y_train):
-        pass
+    def train(self, x_train, y_train, conf: dict = None):
+        if conf is None:
+            conf_def = self.DEFAULT_TRAIN_CONF
+        else:
+            conf_def = {}
+            # Validate options, or set to default
+            for opt, default_val in self.DEFAULT_TRAIN_CONF.items():
+                conf_def[opt] = conf.get(opt, default_val)
+
+        optimizer = GradientDescent(self)
+
+        params_ini = np.zeros(len(x_train[0]) + 1)
+
+        opt_params = optimizer.optimize(
+            x_train,
+            y_train,
+            params_ini,
+            conf_def["gamma"],
+            conf_def["n_iter"],
+            conf_def["verbose"],
+        )
+
+        self.set_params(opt_params)
 
     def set_params(self, params):
         """

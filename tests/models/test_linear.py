@@ -61,3 +61,32 @@ class TestLinearRegression(unittest.TestCase):
 
     def test_gradient_02(self):
         self._test_gradient([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, [-1, -7, 11])
+
+    def test_train(self):
+        model = LinearRegression()
+
+        x_train = [[1, -1], [-2, 4]]
+        y_train = [1, 14]
+
+        model.train(x_train, y_train)
+
+        loss = model.loss(x_train, y_train)
+
+        self.assertAlmostEqual(loss, 0)
+
+    def test_train_conf(self):
+        model = LinearRegression()
+
+        x_train = [[1, -1], [-2, 4]]
+        y_train = [1, 14]
+
+        conf = {
+            "gamma": 0.05,
+            "n_iter": 150,
+        }
+
+        model.train(x_train, y_train, conf)
+
+        loss = model.loss(x_train, y_train)
+
+        self.assertAlmostEqual(loss, 0)

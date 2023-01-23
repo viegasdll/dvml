@@ -15,7 +15,9 @@ class TestGradientDescent(unittest.TestCase):
         model = LinearRegression()
         grad_desc = GradientDescent(model)
 
-        params = grad_desc.optimize(x_in, y_in, params_ini, gamma=.05, n_iter=120, verbose=False)
+        params = grad_desc.optimize(
+            x_in, y_in, params_ini, gamma=0.05, n_iter=120, verbose=False
+        )
 
         loss = model.loss(x_in, y_in, params)
 
@@ -29,7 +31,7 @@ class TestGradientDescent(unittest.TestCase):
         model = LinearRegression()
         grad_desc = GradientDescent(model)
 
-        params = grad_desc.optimize(x_in, y_in, params_ini, gamma=.05, n_iter=120)
+        params = grad_desc.optimize(x_in, y_in, params_ini, gamma=0.05, n_iter=120)
 
         loss = model.loss(x_in, y_in, params)
 

@@ -26,11 +26,12 @@ class SupervisedModel(Model):
     """
 
     @abstractmethod
-    def train(self, x_train, y_train):
+    def train(self, x_train, y_train, conf: dict = None):
         """
 
         :param x_train:
         :param y_train:
+        :param conf:
         :return:
         """
 
