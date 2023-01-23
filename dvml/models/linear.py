@@ -72,3 +72,32 @@ class LinearRegression(SupervisedModel):
 
         # Compute and return loss
         return 0.5 * np.inner(diff, diff)
+
+    def gradient(self, x_in, y_in, params_in=None):
+        """
+
+        :param x_in:
+        :param y_in:
+        :param params_in:
+        :return:
+        """
+        # Check if parameters were passed
+        if params_in is None:
+            params_grad = self.params
+        # Otherwise, use internal parameters
+        else:
+            params_grad = np.array(params_in)
+
+        # Convert X to a NumPy array, and format for linear regression
+        x_np = np.array(x_in)
+        x_form = np.concatenate(
+            (np.ones(len(x_np)).reshape([len(x_np), 1]), x_np), axis=1
+        )
+        # Convert y to a NumPy vector
+        y_form = np.array(y_in)
+
+        # Compute prediction error
+        diff = y_form - np.dot(x_form, params_grad)
+
+        # Compute and return gradient
+        return np.dot(-x_form.transpose(), diff)

@@ -47,3 +47,19 @@ class TestLinearRegression(unittest.TestCase):
 
     def test_loss_02(self):
         self._test_loss([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, 6.5)
+
+    def _test_gradient(self, y, x_in, params_mod, params_in, expected_grad):
+        model = LinearRegression()
+        model.set_params(params_mod)
+
+        grad = model.gradient(x_in, y, params_in)
+
+        print(grad)
+
+        self.assertTrue(np.array_equal(grad, expected_grad))
+
+    def test_gradient_01(self):
+        self._test_gradient([1, 14], [[1, -1], [-2, 4]], None, [2, -1, 3], [-1, -7, 11])
+
+    def test_gradient_02(self):
+        self._test_gradient([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, [-1, -7, 11])
