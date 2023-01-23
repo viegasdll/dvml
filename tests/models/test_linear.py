@@ -54,8 +54,6 @@ class TestLinearRegression(unittest.TestCase):
 
         grad = model.gradient(x_in, y, params_in)
 
-        print(grad)
-
         self.assertTrue(np.array_equal(grad, expected_grad))
 
     def test_gradient_01(self):

@@ -35,6 +35,33 @@ class SupervisedModel(Model):
         """
 
 
+class SupervisedGradientModel(SupervisedModel):
+    """
+    Generic supervised model class,
+    With a differentiable loss function
+    """
+
+    @abstractmethod
+    def loss(self, x_in, y_in, params_in=None):
+        """
+
+        :param x_in:
+        :param y_in:
+        :param params_in:
+        :return:
+        """
+
+    @abstractmethod
+    def gradient(self, x_in, y_in, params_in=None):
+        """
+
+        :param x_in:
+        :param y_in:
+        :param params_in:
+        :return:
+        """
+
+
 class UnsupervisedModel(Model):
     """
     Generic supervised model class

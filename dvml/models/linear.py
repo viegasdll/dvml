@@ -3,10 +3,10 @@ Module for linear models
 """
 import numpy as np
 
-from dvml.models.model import SupervisedModel
+from dvml.models.model import SupervisedGradientModel
 
 
-class LinearRegression(SupervisedModel):
+class LinearRegression(SupervisedGradientModel):
     """
     Placeholder for doc
     """
@@ -45,13 +45,6 @@ class LinearRegression(SupervisedModel):
         self.params = np.array(params)
 
     def loss(self, x_in, y_in, params_in=None):
-        """
-
-        :param x_in:
-        :param y_in:
-        :param params_in:
-        :return:
-        """
         # Check if parameters were passed
         if params_in is None:
             params_loss = self.params
@@ -74,13 +67,6 @@ class LinearRegression(SupervisedModel):
         return 0.5 * np.inner(diff, diff)
 
     def gradient(self, x_in, y_in, params_in=None):
-        """
-
-        :param x_in:
-        :param y_in:
-        :param params_in:
-        :return:
-        """
         # Check if parameters were passed
         if params_in is None:
             params_grad = self.params
