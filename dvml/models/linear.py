@@ -14,10 +14,10 @@ class LinearRegression(SupervisedModel):
     def __init__(self):
         self.params = None
 
-    def predict(self, x_pred):
+    def predict(self, x_in):
         """
         Prediction function
-        :param x_pred:
+        :param x_in:
         :return:
         """
 
@@ -25,13 +25,13 @@ class LinearRegression(SupervisedModel):
         if self.params is None:
             raise RuntimeError("Model must be trained before predicting.")
 
-        # Convert the input to a NumPy array, and format for linear regression
-        x_np = np.array(x_pred)
-        x_in = np.concatenate(
+        # Convert X to a NumPy array, and format for linear regression
+        x_np = np.array(x_in)
+        x_form = np.concatenate(
             (np.ones(len(x_np)).reshape([len(x_np), 1]), x_np), axis=1
         )
 
-        return np.dot(x_in, self.params)
+        return np.dot(x_form, self.params)
 
     def train(self, x_train, y_train):
         pass
@@ -42,4 +42,33 @@ class LinearRegression(SupervisedModel):
         :param params:
         :return:
         """
-        self.params = np.array(params).reshape(len(params), 1)
+        self.params = np.array(params)
+
+    def loss(self, x_in, y_in, params_in=None):
+        """
+
+        :param x_in:
+        :param y_in:
+        :param params_in:
+        :return:
+        """
+        # Check if parameters were passed
+        if params_in is None:
+            params_loss = self.params
+        # Otherwise, use internal parameters
+        else:
+            params_loss = np.array(params_in)
+
+        # Convert X to a NumPy array, and format for linear regression
+        x_np = np.array(x_in)
+        x_form = np.concatenate(
+            (np.ones(len(x_np)).reshape([len(x_np), 1]), x_np), axis=1
+        )
+        # Convert y to a NumPy vector
+        y_form = np.array(y_in)
+
+        # Compute prediction error
+        diff = y_form - np.dot(x_form, params_loss)
+
+        # Compute and return loss
+        return 0.5 * np.inner(diff, diff)

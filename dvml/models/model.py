@@ -12,10 +12,10 @@ class Model(ABC):  # pylint: disable=too-few-public-methods
     """
 
     @abstractmethod
-    def predict(self, x_pred):
+    def predict(self, x_in):
         """
         Prediction function
-        :param x_pred: the input dataset, a pandas dataframe or numpy array
+        :param x_in: the input dataset, a pandas dataframe or numpy array
         :return:
         """
 
@@ -57,5 +57,5 @@ class ConstantModel(Model):  # pylint: disable=too-few-public-methods
     def __init__(self, y_val):
         self.y_val = y_val
 
-    def predict(self, x_pred):
-        return np.ones(len(x_pred)) * self.y_val
+    def predict(self, x_in):
+        return np.ones(len(x_in)) * self.y_val
