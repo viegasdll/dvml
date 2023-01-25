@@ -53,14 +53,7 @@ class LinearRegression(SupervisedGradientModel):
 
         params_ini = np.zeros(len(x_train[0]) + 1)
 
-        opt_params = optimizer.optimize(
-            x_train,
-            y_train,
-            params_ini,
-            conf_def["gamma"],
-            conf_def["n_iter"],
-            conf_def["verbose"],
-        )
+        opt_params = optimizer.optimize(x_train, y_train, params_ini, conf)
 
         self.set_params(opt_params)
 

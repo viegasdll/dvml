@@ -1,9 +1,7 @@
 import unittest
 
-import numpy as np
-
-from dvml.optimization.gradient import GradientDescent
 from dvml.models.linear import LinearRegression
+from dvml.optimization.gradient import GradientDescent
 
 
 class TestGradientDescent(unittest.TestCase):
@@ -15,9 +13,13 @@ class TestGradientDescent(unittest.TestCase):
         model = LinearRegression()
         grad_desc = GradientDescent(model)
 
-        params = grad_desc.optimize(
-            x_in, y_in, params_ini, gamma=0.05, n_iter=120, verbose=False
-        )
+        conf = {
+            "gamma": 0.05,
+            "n_iter": 120,
+            "verbose": False,
+        }
+
+        params = grad_desc.optimize(x_in, y_in, params_ini, conf)
 
         loss = model.loss(x_in, y_in, params)
 
@@ -31,7 +33,12 @@ class TestGradientDescent(unittest.TestCase):
         model = LinearRegression()
         grad_desc = GradientDescent(model)
 
-        params = grad_desc.optimize(x_in, y_in, params_ini, gamma=0.05, n_iter=120)
+        conf = {
+            "gamma": 0.05,
+            "n_iter": 120,
+        }
+
+        params = grad_desc.optimize(x_in, y_in, params_ini, conf)
 
         loss = model.loss(x_in, y_in, params)
 
