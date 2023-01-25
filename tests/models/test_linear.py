@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+from sklearn.datasets import load_diabetes
 
 from dvml.models.linear import LinearRegression
 
@@ -90,3 +91,25 @@ class TestLinearRegression(unittest.TestCase):
         loss = model.loss(x_train, y_train)
 
         self.assertAlmostEqual(loss, 0)
+
+    def test_e2e(self):
+        model = LinearRegression()
+
+        diabetes_dataset = load_diabetes()
+        x_train = diabetes_dataset.data
+        y_train = diabetes_dataset.target
+
+        conf = {
+            "gamma": 0.002,
+            "verbose": False,
+            "n_iter": 2000,
+        }
+
+        loss_start = model.loss(x_train, y_train, np.zeros(x_train.shape[1] + 1))
+
+        model.train(x_train, y_train, conf)
+        loss_end = model.loss(x_train, y_train)
+
+        loss_ratio = loss_end / loss_start
+
+        self.assertLess(loss_ratio, 0.1)
