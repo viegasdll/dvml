@@ -42,6 +42,7 @@ class GradientDescent:  # pylint: disable=too-few-public-methods
         print(f"Initial loss: {loss_ini}")
 
         params = params_ini
+        loss = -1
 
         for ind in range(parsed_conf["n_iter"]):
             grad = self.model.gradient(x_in, y_in, params)

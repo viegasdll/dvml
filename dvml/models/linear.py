@@ -6,6 +6,7 @@ import numpy as np
 from dvml.models.model import SupervisedGradientModel
 from dvml.optimization.gradient import GradientDescent
 from dvml.utils.config_utils import parse_config
+from dvml.utils.data_utils import parse_x_lr
 
 
 class LinearRegression(SupervisedGradientModel):
@@ -35,10 +36,7 @@ class LinearRegression(SupervisedGradientModel):
             raise RuntimeError("Model must be trained before predicting.")
 
         # Convert X to a NumPy array, and format for linear regression
-        x_np = np.array(x_in)
-        x_form = np.concatenate(
-            (np.ones(len(x_np)).reshape([len(x_np), 1]), x_np), axis=1
-        )
+        x_form = parse_x_lr(x_in)
 
         return np.dot(x_form, self.params)
 
@@ -56,12 +54,16 @@ class LinearRegression(SupervisedGradientModel):
         """
 
         parsed_conf = parse_config(conf, self.DEFAULT_TRAIN_CONF)
+        # Convert X to a NumPy array
+        x_form = np.array(x_train)
+        # Convert y to a NumPy vector
+        y_form = np.array(y_train)
 
         optimizer = GradientDescent(self)
 
         params_ini = np.zeros(len(x_train[0]) + 1)
 
-        opt_params = optimizer.optimize(x_train, y_train, params_ini, parsed_conf)
+        opt_params = optimizer.optimize(x_form, y_form, params_ini, parsed_conf)
 
         self.set_params(opt_params)
 
@@ -92,10 +94,7 @@ class LinearRegression(SupervisedGradientModel):
             params_loss = np.array(params_in)
 
         # Convert X to a NumPy array, and format for linear regression
-        x_np = np.array(x_in)
-        x_form = np.concatenate(
-            (np.ones(len(x_np)).reshape([len(x_np), 1]), x_np), axis=1
-        )
+        x_form = parse_x_lr(x_in)
         # Convert y to a NumPy vector
         y_form = np.array(y_in)
 
@@ -114,10 +113,8 @@ class LinearRegression(SupervisedGradientModel):
             params_grad = np.array(params_in)
 
         # Convert X to a NumPy array, and format for linear regression
-        x_np = np.array(x_in)
-        x_form = np.concatenate(
-            (np.ones(len(x_np)).reshape([len(x_np), 1]), x_np), axis=1
-        )
+        x_form = parse_x_lr(x_in)
+
         # Convert y to a NumPy vector
         y_form = np.array(y_in)
 
