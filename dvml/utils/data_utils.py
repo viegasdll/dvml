@@ -8,7 +8,7 @@ def parse_x_lr(x_in):
     """
     Parse features data for linear regression, by adding a column of 1s to the left (for intercept)
 
-    :param x_in:
+    :param x_in: numpy array (or equivalent) with the input features
     :return:
     """
     try:

@@ -6,9 +6,9 @@ Utility functions to handle configurations
 def parse_config(conf, default_conf=None):
     """
 
-    :param conf:
-    :param default_conf:
-    :return:
+    :param conf: config passed by the user
+    :param default_conf: default config for a given class/method
+    :return: parsed configuration with default values for options when missing
     """
     if conf is None:
         conf = {}
