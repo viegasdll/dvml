@@ -2,6 +2,7 @@
 Module for gradient-descent optimizers
 """
 from dvml.models.model import SupervisedGradientModel
+from dvml.utils.config_utils import parse_config
 
 
 class GradientDescent:  # pylint: disable=too-few-public-methods
@@ -34,13 +35,7 @@ class GradientDescent:  # pylint: disable=too-few-public-methods
         :return:
             params (numpy array): optimized model parameters
         """
-        if conf is None:
-            conf_def = self.DEFAULT_CONF
-        else:
-            conf_def = {}
-            # Validate options, or set to default
-            for opt, default_val in self.DEFAULT_CONF.items():
-                conf_def[opt] = conf.get(opt, default_val)
+        parsed_conf = parse_config(conf, self.DEFAULT_CONF)
 
         print("Starting gradient descent optimization...")
         loss_ini = self.model.loss(x_in, y_in, params_ini)
@@ -48,12 +43,12 @@ class GradientDescent:  # pylint: disable=too-few-public-methods
 
         params = params_ini
 
-        for ind in range(conf_def["n_iter"]):
+        for ind in range(parsed_conf["n_iter"]):
             grad = self.model.gradient(x_in, y_in, params)
-            params = params - (conf_def["gamma"] * grad)
+            params = params - (parsed_conf["gamma"] * grad)
             loss = self.model.loss(x_in, y_in, params)
-            if conf_def["verbose"]:
-                print(f"[{ind+1}/{conf_def['n_iter']}] Loss: {loss}")
+            if parsed_conf["verbose"]:
+                print(f"[{ind+1}/{parsed_conf['n_iter']}] Loss: {loss}")
 
         print(f"Final loss: {loss}")
 

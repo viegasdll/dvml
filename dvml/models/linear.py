@@ -5,6 +5,7 @@ import numpy as np
 
 from dvml.models.model import SupervisedGradientModel
 from dvml.optimization.gradient import GradientDescent
+from dvml.utils.config_utils import parse_config
 
 
 class LinearRegression(SupervisedGradientModel):
@@ -54,19 +55,13 @@ class LinearRegression(SupervisedGradientModel):
         :return:
         """
 
-        if conf is None:
-            conf_def = self.DEFAULT_TRAIN_CONF
-        else:
-            conf_def = {}
-            # Validate options, or set to default
-            for opt, default_val in self.DEFAULT_TRAIN_CONF.items():
-                conf_def[opt] = conf.get(opt, default_val)
+        parsed_conf = parse_config(conf, self.DEFAULT_TRAIN_CONF)
 
         optimizer = GradientDescent(self)
 
         params_ini = np.zeros(len(x_train[0]) + 1)
 
-        opt_params = optimizer.optimize(x_train, y_train, params_ini, conf)
+        opt_params = optimizer.optimize(x_train, y_train, params_ini, parsed_conf)
 
         self.set_params(opt_params)
 
