@@ -1,4 +1,11 @@
 
+<a id='changelog-0.2.0'></a>
+# 0.2.0 — 2023-01-25
+
+## Added
+
+- Implemented linear regression.
+
 <a id='changelog-0.1.1'></a>
 # 0.1.1 — 2023-01-22
 
