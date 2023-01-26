@@ -9,7 +9,7 @@ from dvml.optimization.gradient import GradientDescent
 
 class LinearRegression(SupervisedGradientModel):
     """
-    Placeholder for doc
+    Linear regression model, trained with basic gradient descent
     """
 
     DEFAULT_TRAIN_CONF = {
@@ -24,8 +24,9 @@ class LinearRegression(SupervisedGradientModel):
     def predict(self, x_in):
         """
         Prediction function
-        :param x_in:
-        :return:
+
+        :param x_in: a pandas dataframe or numpy array of model features
+        :return: numpy array of model predictions
         """
 
         # First, check that the model is trained, or at least has parameters
@@ -41,6 +42,18 @@ class LinearRegression(SupervisedGradientModel):
         return np.dot(x_form, self.params)
 
     def train(self, x_train, y_train, conf: dict = None):
+        """
+        Trains the model using gradient descent
+
+        :param x_train: a pandas dataframe or numpy array of model features
+        :param y_train: target variable array
+        :param conf: training configuration, dict-like object
+            gamma (float): learning rate
+            n_iter (int): number of iterations of gradient descent to run
+            verbose (bool): whether to print intermediate results or not
+        :return:
+        """
+
         if conf is None:
             conf_def = self.DEFAULT_TRAIN_CONF
         else:
@@ -60,12 +73,22 @@ class LinearRegression(SupervisedGradientModel):
     def set_params(self, params):
         """
         Sets the model parameters
-        :param params:
+
+        :param params: array of desired model parameters
         :return:
         """
         self.params = np.array(params)
 
     def loss(self, x_in, y_in, params_in=None):
+        """
+        Loss function to be optimized when training the model.
+        For linear regression, the loss is the residual sum of squares
+
+        :param x_in: a pandas dataframe or numpy array of model features
+        :param y_in: target variable array
+        :param params_in: model parameters. If not passed, will use the trained model parameters
+        :return: the residual sum of squares for the given input data
+        """
         # Check if parameters were passed
         if params_in is None:
             params_loss = self.params

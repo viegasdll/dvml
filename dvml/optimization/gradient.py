@@ -7,6 +7,8 @@ from dvml.models.model import SupervisedGradientModel
 class GradientDescent:  # pylint: disable=too-few-public-methods
     """
     Basic gradient descent optimizer
+
+    :param model: the model to optimize
     """
 
     DEFAULT_CONF = {
@@ -20,12 +22,17 @@ class GradientDescent:  # pylint: disable=too-few-public-methods
 
     def optimize(self, x_in, y_in, params_ini, conf: dict = None):
         """
+        Optimizes model parameters based on the input data provided.
 
-        :param x_in:
-        :param y_in:
-        :param params_ini:
-        :param conf:
+        :param x_in: a pandas dataframe or numpy array of model features
+        :param y_in: target variable array
+        :param params_ini: initial model parameters
+        :param conf: dict-like object of model parameters:
+            gamma (float): learning rate
+            n_iter (int): number of iterations of gradient descent to run
+            verbose (bool): whether to print intermediate results or not
         :return:
+            params (numpy array): optimized model parameters
         """
         if conf is None:
             conf_def = self.DEFAULT_CONF
