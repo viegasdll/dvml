@@ -13,8 +13,8 @@ def parse_x_lr(x_in):
     """
     try:
         x_np = np.array(x_in)
+        ones = np.ones(len(x_np)).reshape([len(x_np), 1])
     except Exception as exc:
         raise TypeError("The data must be numpy array or equivalent") from exc
 
-    ones = np.ones(len(x_np)).reshape([len(x_np), 1])
     return np.concatenate((ones, x_np), axis=1)
