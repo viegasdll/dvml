@@ -7,7 +7,7 @@ from dvml.utils.data_utils import parse_x_lr
 
 class TestParseXLR(unittest.TestCase):
     def test_empty_x(self):
-        self.assertRaises(TypeError, parse_x_lr, "asd")
+        self.assertRaises(TypeError, parse_x_lr, None)
 
     def test_x(self):
         x_in = [

@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 from sklearn.datasets import load_diabetes
+from numpy.testing import assert_array_almost_equal
 
 from dvml.models.linear import LinearRegression, LogisticRegression
 
@@ -124,3 +125,34 @@ class TestLogisticRegression(unittest.TestCase):
         model.set_params(test_params)
 
         self.assertTrue(np.array_equal(model.params, formatted_params))
+
+    def test_predict_error(self):
+        model = LogisticRegression()
+
+        self.assertRaises(RuntimeError, model.predict, None)
+
+    def _test_predict(self, y, x_in, params):
+        model = LogisticRegression()
+        model.set_params(params)
+
+        y_form = np.array(y)
+
+        assert_array_almost_equal(model.predict(x_in), y_form)
+
+    def test_predict_01(self):
+        x_in = [[0, 0, 0], [-1000, -1000, -1000], [1000, 1000, 1000]]
+
+        expected = [
+            0.5,
+            0,
+            1,
+        ]
+
+        params = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        self._test_predict(expected, x_in, params)
