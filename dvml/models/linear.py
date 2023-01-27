@@ -135,7 +135,36 @@ class LogisticRegression(SupervisedGradientModel):
         self.params = None
 
     def loss(self, x_in, y_in, params_in=None):
-        pass
+        """
+        Loss function to be optimized when training the model.
+        For logistic regression, the loss is the cross-entropy
+
+        :param x_in: a pandas dataframe or numpy array of model features
+        :param y_in: target variable array
+        :param params_in: model parameters. If not passed, will use the trained model parameters
+        :return: the cross-entropy for the given input data
+        """
+        # Check if parameters were passed
+        if params_in is None:
+            params_loss = self.params
+        # Otherwise, use internal parameters
+        else:
+            params_loss = np.array(params_in)
+
+        # Convert X to a NumPy array, and format for linear regression
+        x_form = parse_x_lr(x_in)
+        # Convert y to a NumPy vector
+        y_form = np.array(y_in)
+
+        eps = 1e-9
+
+        loss = -np.sum(
+            y_form * np.log(sigmoid(np.dot(x_form, params_loss)) + eps)
+        ) - np.sum(
+            (1 - y_form) * np.log(sigmoid(1 - np.dot(x_form, params_loss)) + eps)
+        )
+
+        return loss
 
     def gradient(self, x_in, y_in, params_in=None):
         pass

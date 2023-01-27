@@ -156,3 +156,95 @@ class TestLogisticRegression(unittest.TestCase):
         ]
 
         self._test_predict(expected, x_in, params)
+
+    def _test_loss(self, y, x_in, params_mod, params_in, expected_loss):
+        model = LogisticRegression()
+        model.set_params(params_mod)
+
+        loss = model.loss(x_in, y, params_in)
+
+        assert_array_almost_equal(loss, expected_loss)
+
+    def test_loss_01(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_mod = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_in = None
+
+        x_in = [[-1000, -1000, -1000], [1000, 1000, 1000]]
+
+        expected_loss = 0
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def test_loss_02(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_in = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_mod = None
+
+        x_in = [[-1000, -1000, -1000], [1000, 1000, 1000]]
+
+        expected_loss = 0
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def test_loss_03(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_in = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_mod = None
+
+        x_in = [[-1000, -1000, -1000], [-1000, -1000, -1000]]
+
+        expected_loss = 20.7232658
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def test_loss_04(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_in = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_mod = None
+
+        x_in = [[1000, 1000, 1000], [1000, 1000, 1000]]
+
+        expected_loss = 20.7232658
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
