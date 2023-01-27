@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from sklearn.datasets import load_diabetes
 
-from dvml.models.linear import LinearRegression
+from dvml.models.linear import LinearRegression, LogisticRegression
 
 
 class TestLinearRegression(unittest.TestCase):
@@ -113,3 +113,14 @@ class TestLinearRegression(unittest.TestCase):
         loss_ratio = loss_end / loss_start
 
         self.assertLess(loss_ratio, 0.1)
+
+
+class TestLogisticRegression(unittest.TestCase):
+    def test_set_params(self):
+        model = LogisticRegression()
+        test_params = [0.1, 0.2, 0.3]
+        formatted_params = np.array(test_params)
+
+        model.set_params(test_params)
+
+        self.assertTrue(np.array_equal(model.params, formatted_params))

@@ -130,6 +130,9 @@ class LogisticRegression(SupervisedGradientModel):
     Logistic regression model, trained with basic gradient descent
     """
 
+    def __init__(self):
+        self.params = None
+
     def loss(self, x_in, y_in, params_in=None):
         pass
 
@@ -141,3 +144,12 @@ class LogisticRegression(SupervisedGradientModel):
 
     def predict(self, x_in):
         pass
+
+    def set_params(self, params):
+        """
+        Sets the model parameters
+
+        :param params: array of desired model parameters
+        :return:
+        """
+        self.params = np.array(params)
