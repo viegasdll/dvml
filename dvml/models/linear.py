@@ -123,3 +123,21 @@ class LinearRegression(SupervisedGradientModel):
 
         # Compute and return gradient
         return np.dot(-x_form.transpose(), diff)
+
+
+class LogisticRegression(SupervisedGradientModel):
+    """
+    Logistic regression model, trained with basic gradient descent
+    """
+
+    def loss(self, x_in, y_in, params_in=None):
+        pass
+
+    def gradient(self, x_in, y_in, params_in=None):
+        pass
+
+    def train(self, x_train, y_train, conf: dict = None):
+        pass
+
+    def predict(self, x_in):
+        pass
