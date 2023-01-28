@@ -131,6 +131,12 @@ class LogisticRegression(SupervisedGradientModel):
     Logistic regression model, trained with basic gradient descent
     """
 
+    DEFAULT_TRAIN_CONF = {
+        "gamma": 0.1,
+        "n_iter": 1000,
+        "verbose": False,
+    }
+
     def __init__(self):
         self.params = None
 
@@ -181,13 +187,37 @@ class LogisticRegression(SupervisedGradientModel):
         y_form = np.array(y_in)
 
         # Compute prediction error
-        diff = y_form - np.dot(x_form, params_grad)
+        diff = y_form - sigmoid(np.dot(x_form, params_grad))
 
         # Compute and return gradient
         return np.dot(-x_form.transpose(), diff)
 
     def train(self, x_train, y_train, conf: dict = None):
-        pass
+        """
+        Trains the model using gradient descent
+
+        :param x_train: a pandas dataframe or numpy array of model features
+        :param y_train: target variable array
+        :param conf: training configuration, dict-like object
+            gamma (float): learning rate
+            n_iter (int): number of iterations of gradient descent to run
+            verbose (bool): whether to print intermediate results or not
+        :return:
+        """
+
+        parsed_conf = parse_config(conf, self.DEFAULT_TRAIN_CONF)
+        # Convert X to a NumPy array
+        x_form = np.array(x_train)
+        # Convert y to a NumPy vector
+        y_form = np.array(y_train)
+
+        optimizer = GradientDescent(self)
+
+        params_ini = np.zeros(len(x_train[0]) + 1)
+
+        opt_params = optimizer.optimize(x_form, y_form, params_ini, parsed_conf)
+
+        self.set_params(opt_params)
 
     def predict(self, x_in):
         """

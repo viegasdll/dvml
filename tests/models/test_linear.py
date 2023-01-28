@@ -255,10 +255,41 @@ class TestLogisticRegression(unittest.TestCase):
 
         grad = model.gradient(x_in, y, params_in)
 
-        self.assertTrue(np.array_equal(grad, expected_grad))
+        assert_array_almost_equal(grad, expected_grad)
 
     def test_gradient_01(self):
-        self._test_gradient([1, 14], [[1, -1], [-2, 4]], None, [2, -1, 3], [-1, -7, 11])
+        self._test_gradient([1, 0], [[1, 0], [0, 1]], None, [0, 1000, -1000], [0, 0, 0])
 
     def test_gradient_02(self):
-        self._test_gradient([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, [-1, -7, 11])
+        self._test_gradient([1, 0], [[1, 0], [0, 1]], [0, 1000, -1000], None, [0, 0, 0])
+
+    def test_train(self):
+        model = LogisticRegression()
+
+        x_train = [[1, 1], [-1, 1]]
+        y_train = [1, 0]
+
+        model.train(x_train, y_train)
+
+        loss = model.loss(x_train, y_train)
+
+        self.assertAlmostEqual(loss, 0, 1)
+
+    def test_train_conf(self):
+        model = LogisticRegression()
+
+        x_train = [[1, 1], [-1, 1]]
+        y_train = [1, 0]
+
+        conf = {
+            "gamma": 100,
+            "n_iter": 1000,
+        }
+
+        model.train(x_train, y_train, conf)
+
+        print(model.params)
+
+        loss = model.loss(x_train, y_train)
+
+        self.assertAlmostEqual(loss, 0)
