@@ -1,9 +1,10 @@
 import unittest
 
 import numpy as np
-from sklearn.datasets import load_diabetes
+from sklearn.datasets import load_diabetes, load_iris
+from numpy.testing import assert_array_almost_equal
 
-from dvml.models.linear import LinearRegression
+from dvml.models.linear import LinearRegression, LogisticRegression
 
 
 class TestLinearRegression(unittest.TestCase):
@@ -113,3 +114,202 @@ class TestLinearRegression(unittest.TestCase):
         loss_ratio = loss_end / loss_start
 
         self.assertLess(loss_ratio, 0.1)
+
+
+class TestLogisticRegression(unittest.TestCase):
+    def test_set_params(self):
+        model = LogisticRegression()
+        test_params = [0.1, 0.2, 0.3]
+        formatted_params = np.array(test_params)
+
+        model.set_params(test_params)
+
+        self.assertTrue(np.array_equal(model.params, formatted_params))
+
+    def test_predict_error(self):
+        model = LogisticRegression()
+
+        self.assertRaises(RuntimeError, model.predict, None)
+
+    def _test_predict(self, y, x_in, params):
+        model = LogisticRegression()
+        model.set_params(params)
+
+        y_form = np.array(y)
+
+        assert_array_almost_equal(model.predict(x_in), y_form)
+
+    def test_predict_01(self):
+        x_in = [[0, 0, 0], [-1000, -1000, -1000], [1000, 1000, 1000]]
+
+        expected = [
+            0.5,
+            0,
+            1,
+        ]
+
+        params = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        self._test_predict(expected, x_in, params)
+
+    def _test_loss(self, y, x_in, params_mod, params_in, expected_loss):
+        model = LogisticRegression()
+        model.set_params(params_mod)
+
+        loss = model.loss(x_in, y, params_in)
+
+        assert_array_almost_equal(loss, expected_loss)
+
+    def test_loss_01(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_mod = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_in = None
+
+        x_in = [[-1000, -1000, -1000], [1000, 1000, 1000]]
+
+        expected_loss = 0
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def test_loss_02(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_in = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_mod = None
+
+        x_in = [[-1000, -1000, -1000], [1000, 1000, 1000]]
+
+        expected_loss = 0
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def test_loss_03(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_in = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_mod = None
+
+        x_in = [[-1000, -1000, -1000], [-1000, -1000, -1000]]
+
+        expected_loss = 15.249237733900
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def test_loss_04(self):
+        y = [
+            0,
+            1,
+        ]
+
+        params_in = [
+            0,
+            1,
+            1,
+            1,
+        ]
+
+        params_mod = None
+
+        x_in = [[1000, 1000, 1000], [1000, 1000, 1000]]
+
+        expected_loss = 15.249237733900
+
+        self._test_loss(y, x_in, params_mod, params_in, expected_loss)
+
+    def _test_gradient(self, y, x_in, params_mod, params_in, expected_grad):
+        model = LogisticRegression()
+        model.set_params(params_mod)
+
+        grad = model.gradient(x_in, y, params_in)
+
+        assert_array_almost_equal(grad, expected_grad)
+
+    def test_gradient_01(self):
+        self._test_gradient([1, 0], [[1, 0], [0, 1]], None, [0, 1000, -1000], [0, 0, 0])
+
+    def test_gradient_02(self):
+        self._test_gradient([1, 0], [[1, 0], [0, 1]], [0, 1000, -1000], None, [0, 0, 0])
+
+    def test_train(self):
+        model = LogisticRegression()
+
+        x_train = [[1, 1], [-1, 1]]
+        y_train = [1, 0]
+
+        model.train(x_train, y_train)
+
+        loss = model.loss(x_train, y_train)
+
+        self.assertAlmostEqual(loss, 0, 1)
+
+    def test_train_conf(self):
+        model = LogisticRegression()
+
+        x_train = [[1, 1], [-1, 1]]
+        y_train = [1, 0]
+
+        conf = {
+            "gamma": 1,
+            "n_iter": 1000,
+        }
+
+        model.train(x_train, y_train, conf)
+
+        loss = model.loss(x_train, y_train)
+
+        self.assertAlmostEqual(loss, 0, 2)
+
+    def test_e2e(self):
+        model = LogisticRegression()
+
+        iris_dataset = load_iris()
+        x_train = iris_dataset.data
+        y_train = [0 if x == 0 else 1 for x in iris_dataset.target]
+
+        conf = {
+            "gamma": 1,
+            "verbose": False,
+            "n_iter": 1000,
+        }
+
+        loss_start = model.loss(x_train, y_train, np.zeros(x_train.shape[1] + 1))
+
+        model.train(x_train, y_train, conf)
+        loss_end = model.loss(x_train, y_train)
+
+        loss_ratio = loss_end / loss_start
+
+        self.assertLess(loss_ratio, 0.01)
