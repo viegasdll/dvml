@@ -50,7 +50,6 @@ class GradientDescent:  # pylint: disable=too-few-public-methods
             loss = self.model.loss(x_in, y_in, params)
             if parsed_conf["verbose"]:
                 print(f"[{ind+1}/{parsed_conf['n_iter']}] Loss: {loss}")
-                print(params)
 
         print(f"Final loss: {loss}")
 

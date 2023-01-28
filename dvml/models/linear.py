@@ -162,7 +162,7 @@ class LogisticRegression(SupervisedGradientModel):
         # Convert y to a NumPy vector
         y_form = np.array(y_in)
 
-        eps = 1e-9
+        eps = np.finfo(np.float32).eps * 2
 
         loss = -np.sum(
             y_form * np.log(sigmoid(np.dot(x_form, params_loss)) + eps)

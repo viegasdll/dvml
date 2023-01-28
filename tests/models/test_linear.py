@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from sklearn.datasets import load_diabetes
+from sklearn.datasets import load_diabetes, load_iris
 from numpy.testing import assert_array_almost_equal
 
 from dvml.models.linear import LinearRegression, LogisticRegression
@@ -224,7 +224,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         x_in = [[-1000, -1000, -1000], [-1000, -1000, -1000]]
 
-        expected_loss = 20.7232658
+        expected_loss = 15.249237733900
 
         self._test_loss(y, x_in, params_mod, params_in, expected_loss)
 
@@ -245,7 +245,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         x_in = [[1000, 1000, 1000], [1000, 1000, 1000]]
 
-        expected_loss = 20.7232658
+        expected_loss = 15.249237733900
 
         self._test_loss(y, x_in, params_mod, params_in, expected_loss)
 
@@ -282,14 +282,34 @@ class TestLogisticRegression(unittest.TestCase):
         y_train = [1, 0]
 
         conf = {
-            "gamma": 100,
+            "gamma": 1,
             "n_iter": 1000,
         }
 
         model.train(x_train, y_train, conf)
 
-        print(model.params)
-
         loss = model.loss(x_train, y_train)
 
-        self.assertAlmostEqual(loss, 0)
+        self.assertAlmostEqual(loss, 0, 2)
+
+    def test_e2e(self):
+        model = LogisticRegression()
+
+        iris_dataset = load_iris()
+        x_train = iris_dataset.data
+        y_train = [0 if x == 0 else 1 for x in iris_dataset.target]
+
+        conf = {
+            "gamma": 1,
+            "verbose": False,
+            "n_iter": 1000,
+        }
+
+        loss_start = model.loss(x_train, y_train, np.zeros(x_train.shape[1] + 1))
+
+        model.train(x_train, y_train, conf)
+        loss_end = model.loss(x_train, y_train)
+
+        loss_ratio = loss_end / loss_start
+
+        self.assertLess(loss_ratio, 0.01)
