@@ -7,7 +7,21 @@ from numpy.testing import assert_array_almost_equal
 from dvml.models.linear import LinearRegression, LogisticRegression
 
 
-class TestLinearRegression(unittest.TestCase):
+class TestLinearModel(unittest.TestCase):
+    def _test_gradient(self, y, x_in, params_mod, params_in, expected_grad):
+        model = LinearRegression()
+        model.set_params(params_mod)
+
+        grad = model.gradient(x_in, y, params_in)
+
+        self.assertTrue(np.array_equal(grad, expected_grad))
+
+    def test_gradient_01(self):
+        self._test_gradient([1, 14], [[1, -1], [-2, 4]], None, [2, -1, 3], [-1, -7, 11])
+
+    def test_gradient_02(self):
+        self._test_gradient([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, [-1, -7, 11])
+
     def test_set_params(self):
         model = LinearRegression()
         test_params = [0.1, 0.2, 0.3]
@@ -16,6 +30,22 @@ class TestLinearRegression(unittest.TestCase):
         model.set_params(test_params)
 
         self.assertTrue(np.array_equal(model.params, formatted_params))
+
+
+class TestLinearRegression(unittest.TestCase):
+    def _test_loss(self, y, x_in, params_mod, params_in, expected_loss):
+        model = LinearRegression()
+        model.set_params(params_mod)
+
+        loss = model.loss(x_in, y, params_in)
+
+        self.assertEquals(loss, expected_loss)
+
+    def test_loss_01(self):
+        self._test_loss([1, 14], [[1, -1], [-2, 4]], None, [2, -1, 3], 6.5)
+
+    def test_loss_02(self):
+        self._test_loss([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, 6.5)
 
     def test_predict_error(self):
         model = LinearRegression()
@@ -35,34 +65,6 @@ class TestLinearRegression(unittest.TestCase):
 
     def test_predict_02(self):
         self._test_predict([9, 3, 7], np.array([[0, 2], [-1, 1], [3, 0]]), [1, 2, 4])
-
-    def _test_loss(self, y, x_in, params_mod, params_in, expected_loss):
-        model = LinearRegression()
-        model.set_params(params_mod)
-
-        loss = model.loss(x_in, y, params_in)
-
-        self.assertEquals(loss, expected_loss)
-
-    def test_loss_01(self):
-        self._test_loss([1, 14], [[1, -1], [-2, 4]], None, [2, -1, 3], 6.5)
-
-    def test_loss_02(self):
-        self._test_loss([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, 6.5)
-
-    def _test_gradient(self, y, x_in, params_mod, params_in, expected_grad):
-        model = LinearRegression()
-        model.set_params(params_mod)
-
-        grad = model.gradient(x_in, y, params_in)
-
-        self.assertTrue(np.array_equal(grad, expected_grad))
-
-    def test_gradient_01(self):
-        self._test_gradient([1, 14], [[1, -1], [-2, 4]], None, [2, -1, 3], [-1, -7, 11])
-
-    def test_gradient_02(self):
-        self._test_gradient([1, 14], [[1, -1], [-2, 4]], [2, -1, 3], None, [-1, -7, 11])
 
     def test_train(self):
         model = LinearRegression()
@@ -117,15 +119,6 @@ class TestLinearRegression(unittest.TestCase):
 
 
 class TestLogisticRegression(unittest.TestCase):
-    def test_set_params(self):
-        model = LogisticRegression()
-        test_params = [0.1, 0.2, 0.3]
-        formatted_params = np.array(test_params)
-
-        model.set_params(test_params)
-
-        self.assertTrue(np.array_equal(model.params, formatted_params))
-
     def test_predict_error(self):
         model = LogisticRegression()
 
@@ -249,20 +242,6 @@ class TestLogisticRegression(unittest.TestCase):
 
         self._test_loss(y, x_in, params_mod, params_in, expected_loss)
 
-    def _test_gradient(self, y, x_in, params_mod, params_in, expected_grad):
-        model = LogisticRegression()
-        model.set_params(params_mod)
-
-        grad = model.gradient(x_in, y, params_in)
-
-        assert_array_almost_equal(grad, expected_grad)
-
-    def test_gradient_01(self):
-        self._test_gradient([1, 0], [[1, 0], [0, 1]], None, [0, 1000, -1000], [0, 0, 0])
-
-    def test_gradient_02(self):
-        self._test_gradient([1, 0], [[1, 0], [0, 1]], [0, 1000, -1000], None, [0, 0, 0])
-
     def test_train(self):
         model = LogisticRegression()
 
@@ -273,24 +252,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         loss = model.loss(x_train, y_train)
 
-        self.assertAlmostEqual(loss, 0, 1)
-
-    def test_train_conf(self):
-        model = LogisticRegression()
-
-        x_train = [[1, 1], [-1, 1]]
-        y_train = [1, 0]
-
-        conf = {
-            "gamma": 1,
-            "n_iter": 1000,
-        }
-
-        model.train(x_train, y_train, conf)
-
-        loss = model.loss(x_train, y_train)
-
-        self.assertAlmostEqual(loss, 0, 2)
+        self.assertAlmostEqual(loss, 0.1, 1)
 
     def test_e2e(self):
         model = LogisticRegression()

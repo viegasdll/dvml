@@ -43,6 +43,16 @@ class SupervisedGradientModel(SupervisedModel):
     """
 
     @abstractmethod
+    def predict(self, x_in, params_in=None):
+        """
+        Prediction function, with optional parameter passing for gradient computations
+
+        :param x_in: a pandas dataframe or numpy array of model features
+        :param params_in: model parameters. If not passed, will use the trained model parameters
+        :return:
+        """
+
+    @abstractmethod
     def loss(self, x_in, y_in, params_in=None):
         """
         Loss function to be optimized when training the model
