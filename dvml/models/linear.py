@@ -88,30 +88,6 @@ class LinearRegression(LinearModel):
     Linear regression model, trained with basic gradient descent
     """
 
-    def predict(self, x_in, params_in=None):
-        """
-        Prediction function
-
-        :param x_in: a pandas dataframe or numpy array of model features
-        :param params_in: model parameters. If not passed, will use the trained model parameters
-        :return: numpy array of model predictions
-        """
-        # Check if parameters were passed
-        if params_in is None:
-            params_pred = self.params
-        # Otherwise, use internal parameters
-        else:
-            params_pred = np.array(params_in)
-
-        # First, check that the model is trained, or at least has parameters
-        if params_pred is None:
-            raise RuntimeError("Model must be trained before predicting.")
-
-        # Convert X to a NumPy array, and format for linear regression
-        x_form = parse_x_lr(x_in)
-
-        return np.dot(x_form, params_pred)
-
     def loss(self, x_in, y_in, params_in=None):
         """
         Loss function to be optimized when training the model.
@@ -137,6 +113,30 @@ class LinearRegression(LinearModel):
 
         # Compute and return loss
         return 0.5 * np.inner(diff, diff)
+
+    def predict(self, x_in, params_in=None):
+        """
+        Prediction function
+
+        :param x_in: a pandas dataframe or numpy array of model features
+        :param params_in: model parameters. If not passed, will use the trained model parameters
+        :return: numpy array of model predictions
+        """
+        # Check if parameters were passed
+        if params_in is None:
+            params_pred = self.params
+        # Otherwise, use internal parameters
+        else:
+            params_pred = np.array(params_in)
+
+        # First, check that the model is trained, or at least has parameters
+        if params_pred is None:
+            raise RuntimeError("Model must be trained before predicting.")
+
+        # Convert X to a NumPy array, and format for linear regression
+        x_form = parse_x_lr(x_in)
+
+        return np.dot(x_form, params_pred)
 
 
 class LogisticRegression(LinearModel):
@@ -173,33 +173,6 @@ class LogisticRegression(LinearModel):
         )
 
         return loss
-
-    def train(self, x_train, y_train, conf: dict = None):
-        """
-        Trains the model using gradient descent
-
-        :param x_train: a pandas dataframe or numpy array of model features
-        :param y_train: target variable array
-        :param conf: training configuration, dict-like object
-            gamma (float): learning rate
-            n_iter (int): number of iterations of gradient descent to run
-            verbose (bool): whether to print intermediate results or not
-        :return:
-        """
-
-        parsed_conf = parse_config(conf, self.DEFAULT_TRAIN_CONF)
-        # Convert X to a NumPy array
-        x_form = np.array(x_train)
-        # Convert y to a NumPy vector
-        y_form = np.array(y_train)
-
-        optimizer = GradientDescent(self)
-
-        params_ini = np.zeros(len(x_train[0]) + 1)
-
-        opt_params = optimizer.optimize(x_form, y_form, params_ini, parsed_conf)
-
-        self.set_params(opt_params)
 
     def predict(self, x_in, params_in=None):
         """
