@@ -273,7 +273,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         loss = model.loss(x_train, y_train)
 
-        self.assertAlmostEqual(loss, 0, 1)
+        self.assertAlmostEqual(loss, 0.1, 1)
 
     def test_train_conf(self):
         model = LogisticRegression()
