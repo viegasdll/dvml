@@ -1,4 +1,11 @@
 
+<a id='changelog-0.3.1'></a>
+# 0.3.1 — 2023-01-28
+
+## Added
+
+- Refactored the two linear models: all common methods gathered into a `LinearModel` superclass.
+
 <a id='changelog-0.3.0'></a>
 # 0.3.0 — 2023-01-27
 
