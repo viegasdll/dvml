@@ -77,12 +77,12 @@ class ClassificationTreeNode(SupervisedModel):
         # Check if it's a leaf node. If so, compute a return value
         if parsed_config["leaf_node"]:
             self.return_val = np.mean(y_form)
-            return 0
+            return -1
 
         # Check if y is all 1s or 0s. If so, compute a return value
         if np.sum(y_form) == 0 or np.sum(y_form) == len(y_form):
             self.return_val = y_form[0]
-            return 0
+            return -1
 
         # Select the list of features to be tested
         feature_inds = list(range(len(x_form[0])))
@@ -130,8 +130,49 @@ class ClassificationTreeModel(SupervisedModel):
     def __init__(self):
         self.root_node = ClassificationTreeNode()
 
-    def train(self, x_train, y_train, conf: dict = None):
-        pass
+    def train(
+        self, x_train, y_train, conf: dict = None
+    ):  # pylint: disable=too-many-locals
+
+        # Parse config
+        parsed_config = parse_config(conf, self.DEFAULT_CONF)
+        # Convert x_in to a numpy array
+        x_form = np.array(x_train)
+        # Make it into a matrix if it was just a vector
+        if x_form.ndim == 1:
+            x_form = x_form.reshape([1, len(x_form)])
+        # Convert y to a numpy vector
+        y_form = np.array(y_train)
+
+        # Create the list to traverse depth-first
+        node_list = [(self.root_node, x_form, y_form)]
+
+        # Traverse the list, training each node until none are left
+        while len(node_list) > 0:
+            cur_node, x_node, y_node = node_list.pop()
+
+            # Create config for node training
+            is_leaf = False
+            if cur_node.depth >= parsed_config["max_depth"]:
+                is_leaf = True
+            node_conf = {
+                "n_features": parsed_config["n_features"],
+                "leaf_node": is_leaf,
+            }
+
+            # Train the node
+            cur_node_out = cur_node.train(x_node, y_node, node_conf)
+
+            if cur_node_out != -1:
+                # The node was not a leaf, create successors
+                node_left = ClassificationTreeNode(depth=cur_node.depth + 1)
+                node_right = ClassificationTreeNode(depth=cur_node.depth + 1)
+                # Attach successors to current node
+                cur_node.left = node_left
+                cur_node.right = node_right
+                # Add successors to node list
+                node_list.append((node_left, cur_node_out[0], cur_node_out[1]))
+                node_list.append((node_right, cur_node_out[0], cur_node_out[1]))
 
     def predict(self, x_in):
         return self.root_node.predict(x_in)
