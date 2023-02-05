@@ -21,7 +21,7 @@ class ClassificationTreeNode(SupervisedModel):
         "leaf_node": False,
     }
 
-    def __init__(self, return_val=0.5):
+    def __init__(self, return_val=0.5, depth=1):
         # Define the left and right successors, set to empty to start with
         self.left = None
         self.right = None
@@ -33,6 +33,8 @@ class ClassificationTreeNode(SupervisedModel):
             "feature": 0,  # The index of the feature used in the decision
             "boundary": 0,  # The boundary value that decides between left/right successor
         }
+        # Set the depth
+        self.depth = depth
 
     def predict(self, x_in):
         # Convert x_in to a numpy array
@@ -122,6 +124,7 @@ class ClassificationTreeModel(SupervisedModel):
 
     DEFAULT_CONF = {
         "n_features": "all",  # Can be either "all", "sqrt", or a number
+        "max_depth": None,
     }
 
     def __init__(self):

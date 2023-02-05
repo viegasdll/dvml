@@ -16,6 +16,7 @@ class TestClassificationTreeNode(unittest.TestCase):
         self.assertTrue(node.left is None)
         self.assertTrue(node.right is None)
         self.assertEqual(node.return_val, 0.5)
+        self.assertEqual(node.depth, 1)
 
     def test_predict_one_01(self):
         node = ClassificationTreeNode(return_val=0.2)
