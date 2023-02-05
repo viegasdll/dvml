@@ -94,3 +94,92 @@ class TestClassificationTreeNode(unittest.TestCase):
         expected = [0.8, 0.2, 0.8]
 
         assert_array_equal(result, expected)
+
+    def test_train_leaf_node(self):
+        node = ClassificationTreeNode()
+
+        conf = {"leaf_node": True}
+
+        x_train = [1, 2, 3, 4, 5]
+        y_train = [0, 1, 0, 1, 0]
+
+        node.train(x_train, y_train, conf)
+
+        result = node.predict(x_train)
+        expected = 0.4
+
+        self.assertEqual(result, expected)
+
+    def test_train_constant_y(self):
+        node = ClassificationTreeNode()
+
+        x_train = [1, 2, 3, 4, 5]
+        y_train = [1, 1, 1, 1, 1]
+
+        node.train(x_train, y_train)
+
+        result = node.predict(x_train)
+        expected = 1
+
+        self.assertEqual(result, expected)
+
+    def test_train_node(self):
+        node = ClassificationTreeNode()
+
+        x_train = np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 0, 1, 0, 1, 0, 1],
+                [-1, -1, -1, 3, 3, 3, 3, 3],
+                [5, 5, 1, 1, 1, 1, 1, 1],
+            ]
+        ).transpose()
+        y_train = [0, 0, 0, 0, 1, 1, 1, 1]
+
+        x_left, y_left, x_right, y_right = node.train(x_train, y_train)
+
+        x_left_expected = x_train[:3, :]
+        x_right_expected = x_train[3:, :]
+
+        self.assertEqual(node.decision["feature"], 2)
+        self.assertEqual(node.decision["boundary"], -0.9)
+        assert_array_equal(x_left, x_left_expected)
+        assert_array_equal(x_right, x_right_expected)
+
+    def test_train_node_sqrt(self):
+        node = ClassificationTreeNode()
+
+        x_train = np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 0, 1, 0, 1, 0, 1],
+                [-1, -1, -1, 3, 3, 3, 3, 3],
+                [5, 5, 1, 1, 1, 1, 1, 1],
+            ]
+        ).transpose()
+        y_train = [0, 0, 0, 0, 1, 1, 1, 1]
+
+        conf = {"n_features": "sqrt"}
+
+        node.train(x_train, y_train, conf)
+
+        self.assertNotEqual(node.decision["boundary"], 0)
+
+    def test_train_node_n_feats(self):
+        node = ClassificationTreeNode()
+
+        x_train = np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 0, 1, 0, 1, 0, 1],
+                [-1, -1, -1, 3, 3, 3, 3, 3],
+                [5, 5, 1, 1, 1, 1, 1, 1],
+            ]
+        ).transpose()
+        y_train = [0, 0, 0, 0, 1, 1, 1, 1]
+
+        conf = {"n_features": 1}
+
+        node.train(x_train, y_train, conf)
+
+        self.assertNotEqual(node.decision["boundary"], 0)

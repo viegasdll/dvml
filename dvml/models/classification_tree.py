@@ -1,9 +1,14 @@
 """
 Module for classification tree
 """
+import random
+from math import ceil, sqrt
+
 import numpy as np
 
 from dvml.models.model import SupervisedModel
+from dvml.utils.config_utils import parse_config
+from dvml.utils.math_utils import gini_opt_split
 
 
 class ClassificationTreeNode(SupervisedModel):
@@ -53,13 +58,58 @@ class ClassificationTreeNode(SupervisedModel):
             return self.left.predict_one(x_vec)
         return self.right.predict_one(x_vec)
 
-    def train(self, x_train, y_train, conf: dict = None):
-        # Overall scheme:
-        # If leaf_node = True, compute the decision based on y_train
-        # If y_train is all 1 or 0, set the decision to that value
-        # Otherwise, define the boundary
-        # 1. select a subset of feature indices based on n_feats
-        # 2. for each feature, determine the optimal boundary value
-        # 3. pick the best, overwrite the decision object
-        # Note: need the gini function, for both optimization and tests
-        pass
+    def train(
+        self, x_train, y_train, conf: dict = None
+    ):  # pylint: disable=too-many-locals
+        # 4. return the left/right population, for tree learning
+
+        # Parse config
+        parsed_config = parse_config(conf, self.DEFAULT_CONF)
+        # Convert x_in to a numpy array
+        x_form = np.array(x_train)
+        # Make it into a matrix if it was just a vector
+        if x_form.ndim == 1:
+            x_form = x_form.reshape([1, len(x_form)])
+        # Convert y to a numpy vector
+        y_form = np.array(y_train)
+
+        # Check if it's a leaf node. If so, compute a return value
+        if parsed_config["leaf_node"]:
+            self.return_val = np.mean(y_form)
+            return 0
+
+        # Check if y is all 1s or 0s. If so, compute a return value
+        if np.sum(y_form) == 0 or np.sum(y_form) == len(y_form):
+            self.return_val = y_form[0]
+            return 0
+
+        # Select the list of features to be tested
+        feature_inds = list(range(len(x_form[0])))
+        if parsed_config["n_features"] == "all":
+            features = feature_inds
+        elif parsed_config["n_features"] == "sqrt":
+            n_feats = ceil(sqrt(len(feature_inds)))
+            features = sorted(random.sample(feature_inds, n_feats))
+        else:
+            n_feats = max([int(parsed_config["n_features"]), len(feature_inds)])
+            features = sorted(random.sample(feature_inds, n_feats))
+
+        # For each feature in the list, compute a good boundary
+        boundaries = [gini_opt_split(x_form[:, feat], y_form) for feat in features]
+        # Find the best boundary
+        opt_boundary, opt_gini = min(boundaries, key=lambda bdr: bdr[1])
+        opt_feature = features[boundaries.index((opt_boundary, opt_gini))]
+
+        # Overwrite the decision
+        self.decision = {
+            "feature": opt_feature,
+            "boundary": opt_boundary,
+        }
+
+        # Split the dataset according to the decision
+        x_left = x_form[x_form[:, opt_feature] < opt_boundary, :]
+        y_left = y_form[x_form[:, opt_feature] < opt_boundary]
+        x_right = x_form[x_form[:, opt_feature] > opt_boundary, :]
+        y_right = y_form[x_form[:, opt_feature] > opt_boundary]
+
+        return x_left, y_left, x_right, y_right
