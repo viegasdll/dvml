@@ -11,6 +11,11 @@ class ClassificationTreeNode(SupervisedModel):
     Individual node for a classification tree
     """
 
+    DEFAULT_CONF = {
+        "n_features": "all",  # Can be either "all", "sqrt", or a number
+        "leaf_node": False,
+    }
+
     def __init__(self, return_val=0.5):
         # Define the left and right successors, set to empty to start with
         self.left = None
@@ -49,4 +54,12 @@ class ClassificationTreeNode(SupervisedModel):
         return self.right.predict_one(x_vec)
 
     def train(self, x_train, y_train, conf: dict = None):
+        # Overall scheme:
+        # If leaf_node = True, compute the decision based on y_train
+        # If y_train is all 1 or 0, set the decision to that value
+        # Otherwise, define the boundary
+        # 1. select a subset of feature indices based on n_feats
+        # 2. for each feature, determine the optimal boundary value
+        # 3. pick the best, overwrite the decision object
+        # Note: need the gini function, for both optimization and tests
         pass
