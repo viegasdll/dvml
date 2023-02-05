@@ -1,9 +1,12 @@
 import unittest
 
 import numpy as np
-
-from dvml.models.classification_tree import ClassificationTreeNode
 from numpy.testing import assert_array_equal
+
+from dvml.models.classification_tree import (
+    ClassificationTreeNode,
+    ClassificationTreeModel,
+)
 
 
 class TestClassificationTreeNode(unittest.TestCase):
@@ -183,3 +186,41 @@ class TestClassificationTreeNode(unittest.TestCase):
         node.train(x_train, y_train, conf)
 
         self.assertNotEqual(node.decision["boundary"], 0)
+
+
+class TestClassificationTreeModel(unittest.TestCase):
+    def test_init(self):
+        model = ClassificationTreeModel()
+
+        self.assertTrue(model.root_node.left is None)
+        self.assertTrue(model.root_node.right is None)
+        self.assertEqual(model.root_node.return_val, 0.5)
+
+    def test_predict_matrix(self):
+        node = ClassificationTreeNode()
+
+        left = ClassificationTreeNode(0.2)
+        right = ClassificationTreeNode(0.8)
+
+        node.left = left
+        node.right = right
+
+        node.decision = {
+            "feature": 2,
+            "boundary": 1,
+        }
+
+        model = ClassificationTreeModel()
+
+        model.root_node = node
+
+        x_in = [
+            [1, 2, 3],
+            [0, -1, -1],
+            [10, 15, 1],
+        ]
+
+        result = model.predict(x_in)
+        expected = [0.8, 0.2, 0.8]
+
+        assert_array_equal(result, expected)

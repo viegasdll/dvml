@@ -61,7 +61,6 @@ class ClassificationTreeNode(SupervisedModel):
     def train(
         self, x_train, y_train, conf: dict = None
     ):  # pylint: disable=too-many-locals
-        # 4. return the left/right population, for tree learning
 
         # Parse config
         parsed_config = parse_config(conf, self.DEFAULT_CONF)
@@ -113,3 +112,23 @@ class ClassificationTreeNode(SupervisedModel):
         y_right = y_form[x_form[:, opt_feature] > opt_boundary]
 
         return x_left, y_left, x_right, y_right
+
+
+class ClassificationTreeModel(SupervisedModel):
+    """
+    Classification tree model class. Builds the model through
+    individual nodes, depth-first
+    """
+
+    DEFAULT_CONF = {
+        "n_features": "all",  # Can be either "all", "sqrt", or a number
+    }
+
+    def __init__(self):
+        self.root_node = ClassificationTreeNode()
+
+    def train(self, x_train, y_train, conf: dict = None):
+        pass
+
+    def predict(self, x_in):
+        return self.root_node.predict(x_in)
