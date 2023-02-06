@@ -155,7 +155,7 @@ class TestClassificationTreeNode(unittest.TestCase):
 
         x_train = np.array(
             [
-                [1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 3, 4, 5, 6, 7, 8],
                 [0, 1, 0, 1, 0, 1, 0, 1],
                 [-1, -1, -1, 3, 3, 3, 3, 3],
                 [5, 5, 1, 1, 1, 1, 1, 1],
@@ -174,7 +174,7 @@ class TestClassificationTreeNode(unittest.TestCase):
 
         x_train = np.array(
             [
-                [1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 3, 4, 5, 6, 7, 8],
                 [0, 1, 0, 1, 0, 1, 0, 1],
                 [-1, -1, -1, 3, 3, 3, 3, 3],
                 [5, 5, 1, 1, 1, 1, 1, 1],
@@ -254,3 +254,22 @@ class TestClassificationTreeModel(unittest.TestCase):
         expected = [1, 0, 1]
 
         assert_array_equal(result, expected)
+
+    def test_train(self):
+        model = ClassificationTreeModel()
+
+        x_train = np.array(
+            [
+                [1, 2, 3, 4, 5, 6, 7, 8],
+                [0, 1, 0, 1, 0, 1, 0, 1],
+                [-1, -1, -1, 3, 3, 3, 3, 3],
+                [5, 5, 1, 1, 1, 1, 1, 1],
+            ]
+        ).transpose()
+        y_train = [0, 0, 0, 0, 1, 1, 1, 1]
+
+        model.train(x_train, y_train)
+
+        result = model.predict(x_train)
+
+        print(result)

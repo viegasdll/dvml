@@ -8,7 +8,7 @@ import numpy as np
 
 from dvml.models.model import SupervisedModel
 from dvml.utils.config_utils import parse_config
-from dvml.utils.math_utils import gini_opt_split
+from dvml.utils.math_utils import gini_binary, gini_opt_split
 
 
 class ClassificationTreeNode(SupervisedModel):
@@ -97,8 +97,15 @@ class ClassificationTreeNode(SupervisedModel):
 
         # For each feature in the list, compute a good boundary
         boundaries = [gini_opt_split(x_form[:, feat], y_form) for feat in features]
+
         # Find the best boundary
         opt_boundary, opt_gini = min(boundaries, key=lambda bdr: bdr[1])
+        # If there's no improvement, compute a return value
+        if opt_gini >= gini_binary(y_form):
+            self.return_val = np.mean(y_form)
+            return -1
+
+        # Otherwise, extract the best feature and proceed
         opt_feature = features[boundaries.index((opt_boundary, opt_gini))]
 
         # Overwrite the decision
@@ -149,11 +156,17 @@ class ClassificationTreeModel(SupervisedModel):
 
         # Traverse the list, training each node until none are left
         while len(node_list) > 0:
+            print("ITERATION START\n")
+            print(node_list[-1])
+
             cur_node, x_node, y_node = node_list.pop()
 
             # Create config for node training
             is_leaf = False
-            if cur_node.depth >= parsed_config["max_depth"]:
+            if (
+                parsed_config["max_depth"] is not None
+                and cur_node.depth >= parsed_config["max_depth"]
+            ):
                 is_leaf = True
             node_conf = {
                 "n_features": parsed_config["n_features"],
@@ -162,6 +175,11 @@ class ClassificationTreeModel(SupervisedModel):
 
             # Train the node
             cur_node_out = cur_node.train(x_node, y_node, node_conf)
+
+            print(cur_node.decision, cur_node.return_val, cur_node.depth)
+
+            if cur_node_out == -1:
+                print("LEAF NODE")
 
             if cur_node_out != -1:
                 # The node was not a leaf, create successors
@@ -172,7 +190,7 @@ class ClassificationTreeModel(SupervisedModel):
                 cur_node.right = node_right
                 # Add successors to node list
                 node_list.append((node_left, cur_node_out[0], cur_node_out[1]))
-                node_list.append((node_right, cur_node_out[0], cur_node_out[1]))
+                node_list.append((node_right, cur_node_out[2], cur_node_out[3]))
 
     def predict(self, x_in):
         return self.root_node.predict(x_in)
