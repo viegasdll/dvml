@@ -12,6 +12,44 @@ from dvml.utils.data_utils import parse_x_ct
 from dvml.utils.math_utils import gini_binary, gini_opt_split
 
 
+def select_features(n_features, n_desired):
+    """
+
+    :param n_features:
+    :param n_desired:
+    :return:
+    """
+    feature_inds = list(range(n_features))
+    if n_desired == "all":
+        features = feature_inds
+    elif n_desired == "sqrt":
+        n_feats = ceil(sqrt(n_features))
+        features = sorted(random.sample(feature_inds, n_feats))
+    else:
+        n_feats = min([int(n_desired), len(feature_inds)])
+        features = sorted(random.sample(feature_inds, n_feats))
+
+    return features
+
+
+def split_data_boundary(x_in, y_in, feat_ind, boundary):
+    """
+
+    :param x_in:
+    :param y_in:
+    :param feat_ind:
+    :param boundary:
+    :return:
+    """
+    # Split the dataset according to the decision
+    x_left = x_in[x_in[:, feat_ind] < boundary, :]
+    y_left = y_in[x_in[:, feat_ind] < boundary]
+    x_right = x_in[x_in[:, feat_ind] > boundary, :]
+    y_right = y_in[x_in[:, feat_ind] > boundary]
+
+    return x_left, y_left, x_right, y_right
+
+
 class ClassificationTreeNode(SupervisedModel):
     """
     Individual node for a classification tree
@@ -58,9 +96,7 @@ class ClassificationTreeNode(SupervisedModel):
             return self.left.predict_one(x_vec)
         return self.right.predict_one(x_vec)
 
-    def train(
-        self, x_train, y_train, conf: dict = None
-    ):  # pylint: disable=too-many-locals
+    def train(self, x_train, y_train, conf: dict = None):
 
         # Parse config
         parsed_config = parse_config(conf, self.DEFAULT_CONF)
@@ -80,15 +116,7 @@ class ClassificationTreeNode(SupervisedModel):
             return -1
 
         # Select the list of features to be tested
-        feature_inds = list(range(len(x_form[0])))
-        if parsed_config["n_features"] == "all":
-            features = feature_inds
-        elif parsed_config["n_features"] == "sqrt":
-            n_feats = ceil(sqrt(len(feature_inds)))
-            features = sorted(random.sample(feature_inds, n_feats))
-        else:
-            n_feats = max([int(parsed_config["n_features"]), len(feature_inds)])
-            features = sorted(random.sample(feature_inds, n_feats))
+        features = select_features(len(x_form[0, :]), parsed_config["n_features"])
 
         # For each feature in the list, compute a good boundary
         boundaries = [gini_opt_split(x_form[:, feat], y_form) for feat in features]
@@ -110,12 +138,7 @@ class ClassificationTreeNode(SupervisedModel):
         }
 
         # Split the dataset according to the decision
-        x_left = x_form[x_form[:, opt_feature] < opt_boundary, :]
-        y_left = y_form[x_form[:, opt_feature] < opt_boundary]
-        x_right = x_form[x_form[:, opt_feature] > opt_boundary, :]
-        y_right = y_form[x_form[:, opt_feature] > opt_boundary]
-
-        return x_left, y_left, x_right, y_right
+        return split_data_boundary(x_form, y_form, opt_feature, opt_boundary)
 
 
 class ClassificationTreeModel(SupervisedModel):

@@ -202,7 +202,7 @@ class TestClassificationTreeNode(unittest.TestCase):
         ).transpose()
         y_train = [0, 0, 0, 0, 1, 1, 1, 1]
 
-        conf = {"n_features": 1}
+        conf = {"n_features": 2}
 
         node.train(x_train, y_train, conf)
 
