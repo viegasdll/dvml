@@ -8,6 +8,7 @@ import numpy as np
 
 from dvml.models.model import SupervisedModel
 from dvml.utils.config_utils import parse_config
+from dvml.utils.data_utils import parse_x_ct
 from dvml.utils.math_utils import gini_binary, gini_opt_split
 
 
@@ -38,10 +39,7 @@ class ClassificationTreeNode(SupervisedModel):
 
     def predict(self, x_in):
         # Convert x_in to a numpy array
-        x_form = np.array(x_in)
-        # Make it into a matrix if it was just a vector
-        if x_form.ndim == 1:
-            x_form = x_form.reshape([1, len(x_form)])
+        x_form = parse_x_ct(x_in)
 
         # Compute the prediction for each row of the dataset, and collect them into a vector
         return np.apply_along_axis(self.predict_one, axis=1, arr=x_form)
@@ -67,10 +65,7 @@ class ClassificationTreeNode(SupervisedModel):
         # Parse config
         parsed_config = parse_config(conf, self.DEFAULT_CONF)
         # Convert x_in to a numpy array
-        x_form = np.array(x_train)
-        # Make it into a matrix if it was just a vector
-        if x_form.ndim == 1:
-            x_form = x_form.reshape([1, len(x_form)])
+        x_form = parse_x_ct(x_train)
         # Convert y to a numpy vector
         y_form = np.array(y_train)
 
@@ -144,10 +139,7 @@ class ClassificationTreeModel(SupervisedModel):
         # Parse config
         parsed_config = parse_config(conf, self.DEFAULT_CONF)
         # Convert x_in to a numpy array
-        x_form = np.array(x_train)
-        # Make it into a matrix if it was just a vector
-        if x_form.ndim == 1:
-            x_form = x_form.reshape([1, len(x_form)])
+        x_form = parse_x_ct(x_train)
         # Convert y to a numpy vector
         y_form = np.array(y_train)
 
