@@ -225,3 +225,32 @@ class TestClassificationTreeModel(unittest.TestCase):
         expected = [0.8, 0.2, 0.8]
 
         assert_array_equal(result, expected)
+
+    def test_predict_th(self):
+        node = ClassificationTreeNode()
+
+        left = ClassificationTreeNode(0.2)
+        right = ClassificationTreeNode(0.8)
+
+        node.left = left
+        node.right = right
+
+        node.decision = {
+            "feature": 2,
+            "boundary": 1,
+        }
+
+        model = ClassificationTreeModel()
+
+        model.root_node = node
+
+        x_in = [
+            [1, 2, 3],
+            [0, -1, -1],
+            [10, 15, 1],
+        ]
+
+        result = model.predict_th(x_in)
+        expected = [1, 0, 1]
+
+        assert_array_equal(result, expected)

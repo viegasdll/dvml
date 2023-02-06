@@ -176,3 +176,18 @@ class ClassificationTreeModel(SupervisedModel):
 
     def predict(self, x_in):
         return self.root_node.predict(x_in)
+
+    def predict_th(self, x_in, threshold=0.5):
+        """
+
+        :param x_in:
+        :param threshold:
+        :return:
+        """
+
+        def apply_th(y_val):
+            if y_val < threshold:
+                return 0
+            return 1
+
+        return np.array([apply_th(y_pred) for y_pred in self.predict(x_in)])
