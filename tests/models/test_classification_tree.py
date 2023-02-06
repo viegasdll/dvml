@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 from numpy.testing import assert_array_equal
+from sklearn.datasets import load_iris
 
 from dvml.models.classification_tree import (
     ClassificationTreeNode,
@@ -315,3 +316,12 @@ class TestClassificationTreeModel(unittest.TestCase):
         expected = 0.5 * np.ones(8)
 
         assert_array_equal(result, expected)
+
+    def test_e2e(self):
+        model = ClassificationTreeModel()
+
+        iris_dataset = load_iris()
+        x_train = iris_dataset.data
+        y_train = [0 if x == 0 else 1 for x in iris_dataset.target]
+
+        model.train(x_train, y_train)
