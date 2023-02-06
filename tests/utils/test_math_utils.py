@@ -114,7 +114,7 @@ class TestGiniOptSplit(unittest.TestCase):
         y_in = [1, 0, 0, 0, 1, 1, 1, 1, 1]
 
         result = gini_opt_split(x_in, y_in)
-        expected = (4.3, 1 / 6)
+        expected = (4.2, 1 / 6)
 
         assert_array_almost_equal(result, expected)
 

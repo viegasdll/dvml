@@ -2,8 +2,9 @@ import unittest
 
 import numpy as np
 from numpy.testing import assert_array_equal
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_breast_cancer
 
+from dvml.metrics.classification import accuracy
 from dvml.models.classification_tree import (
     ClassificationTreeNode,
     ClassificationTreeModel,
@@ -165,7 +166,7 @@ class TestClassificationTreeNode(unittest.TestCase):
         x_right_expected = x_train[3:, :]
 
         self.assertEqual(node.decision["feature"], 2)
-        self.assertEqual(node.decision["boundary"], -0.9)
+        self.assertEqual(node.decision["boundary"], -0.6)
         assert_array_equal(x_left, x_left_expected)
         assert_array_equal(x_right, x_right_expected)
 
@@ -317,11 +318,34 @@ class TestClassificationTreeModel(unittest.TestCase):
 
         assert_array_equal(result, expected)
 
-    def test_e2e(self):
+    def test_e2e_overfit(self):
         model = ClassificationTreeModel()
 
-        iris_dataset = load_iris()
-        x_train = iris_dataset.data
-        y_train = [0 if x == 0 else 1 for x in iris_dataset.target]
+        bc_dataset = load_breast_cancer()
+        x_train = bc_dataset.data
+        y_train = bc_dataset.target
 
         model.train(x_train, y_train)
+
+        y_pred = model.predict(x_train)
+
+        assert_array_equal(y_pred, y_train)
+
+    def test_e2e_max_depth_3(self):
+        model = ClassificationTreeModel()
+
+        bc_dataset = load_breast_cancer()
+        x_train = bc_dataset.data
+        y_train = bc_dataset.target
+
+        conf = {
+            "max_depth": 3,
+        }
+
+        model.train(x_train, y_train, conf)
+
+        y_pred = model.predict_th(x_train)
+
+        acc_pred = accuracy(y_train, y_pred)
+
+        self.assertGreater(acc_pred, 0.9)

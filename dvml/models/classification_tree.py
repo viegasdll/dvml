@@ -158,8 +158,6 @@ class ClassificationTreeModel(SupervisedModel):
         while len(node_list) > 0:
             cur_node, x_node, y_node = node_list.pop()
 
-            print(f"Depth: {cur_node.depth}")
-
             # Create config for node training
             is_leaf = False
             if (

@@ -85,9 +85,8 @@ def gini_opt_split(x_in, y_in):
         return x_min, gini_binary_split(x_in, y_in, x_min)
 
     # If not, define a set of candidate boundaries
-    boundaries = np.arange(
-        x_min + 1 / n_boundaries, x_max, (x_max - x_min) / n_boundaries
-    )
+    step = (x_max - x_min) / n_boundaries
+    boundaries = np.arange(x_min + step, x_max, step)
 
     # For each boundary, find the resulting gini impurity from the split
     split_ginis = [gini_binary_split(x_in, y_in, bdr) for bdr in boundaries]
