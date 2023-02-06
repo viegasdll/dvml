@@ -156,10 +156,9 @@ class ClassificationTreeModel(SupervisedModel):
 
         # Traverse the list, training each node until none are left
         while len(node_list) > 0:
-            print("ITERATION START\n")
-            print(node_list[-1])
-
             cur_node, x_node, y_node = node_list.pop()
+
+            print(f"Depth: {cur_node.depth}")
 
             # Create config for node training
             is_leaf = False
@@ -175,11 +174,6 @@ class ClassificationTreeModel(SupervisedModel):
 
             # Train the node
             cur_node_out = cur_node.train(x_node, y_node, node_conf)
-
-            print(cur_node.decision, cur_node.return_val, cur_node.depth)
-
-            if cur_node_out == -1:
-                print("LEAF NODE")
 
             if cur_node_out != -1:
                 # The node was not a leaf, create successors

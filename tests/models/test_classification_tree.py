@@ -104,28 +104,46 @@ class TestClassificationTreeNode(unittest.TestCase):
 
         conf = {"leaf_node": True}
 
-        x_train = [1, 2, 3, 4, 5]
+        x_train = np.array([1, 2, 3, 4, 5]).reshape([5, 1])
         y_train = [0, 1, 0, 1, 0]
 
         node.train(x_train, y_train, conf)
 
-        result = node.predict(x_train)
-        expected = 0.4
+        print(x_train)
 
-        self.assertEqual(result, expected)
+        result = node.predict(x_train)
+
+        print(result)
+
+        expected = 0.4 * np.ones(5)
+
+        assert_array_equal(result, expected)
 
     def test_train_constant_y(self):
         node = ClassificationTreeNode()
 
-        x_train = [1, 2, 3, 4, 5]
+        x_train = np.array([1, 2, 3, 4, 5]).reshape([5, 1])
         y_train = [1, 1, 1, 1, 1]
 
         node.train(x_train, y_train)
 
         result = node.predict(x_train)
-        expected = 1
+        expected = np.ones(5)
 
-        self.assertEqual(result, expected)
+        assert_array_equal(result, expected)
+
+    def test_train_no_improve(self):
+        node = ClassificationTreeNode()
+
+        x_train = np.array([1, 1, 2, 2]).reshape([4, 1])
+        y_train = [0, 1, 0, 1]
+
+        node.train(x_train, y_train)
+
+        result = node.predict(x_train)
+        expected = 0.5 * np.ones(4)
+
+        assert_array_equal(result, expected)
 
     def test_train_node(self):
         node = ClassificationTreeNode()
@@ -272,4 +290,28 @@ class TestClassificationTreeModel(unittest.TestCase):
 
         result = model.predict(x_train)
 
-        print(result)
+        assert_array_equal(result, y_train)
+
+    def test_train_max_depth_2(self):
+        model = ClassificationTreeModel()
+
+        x_train = np.array(
+            [
+                [1, 2, 3, 4, 5, 6, 7, 8],
+                [0, 1, 0, 1, 0, 1, 0, 1],
+                [-1, -1, -1, 3, 3, 3, 3, 3],
+                [5, 5, 1, 1, 1, 1, 1, 1],
+            ]
+        ).transpose()
+        y_train = [0, 0, 0, 0, 1, 1, 1, 1]
+
+        conf = {
+            "max_depth": 1,
+        }
+
+        model.train(x_train, y_train, conf)
+
+        result = model.predict(x_train)
+        expected = 0.5 * np.ones(8)
+
+        assert_array_equal(result, expected)
