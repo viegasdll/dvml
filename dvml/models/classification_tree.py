@@ -14,10 +14,11 @@ from dvml.utils.math_utils import gini_binary, gini_opt_split
 
 def select_features(n_features, n_desired):
     """
+    Selects a subset of feature indices based on the desired number
 
-    :param n_features:
-    :param n_desired:
-    :return:
+    :param n_features: number of input features
+    :param n_desired: desired # of features ('sqrt', 'all', or an integer)
+    :return: list of feature indices with the desired size
     """
     feature_inds = list(range(n_features))
     if n_desired == "all":
@@ -34,12 +35,13 @@ def select_features(n_features, n_desired):
 
 def split_data_boundary(x_in, y_in, feat_ind, boundary):
     """
+    Splits dataset according to a given feature and boundary
 
-    :param x_in:
-    :param y_in:
-    :param feat_ind:
-    :param boundary:
-    :return:
+    :param x_in: numpy matrix (or equivalent) of input features
+    :param y_in: 1-D numpy array (or equivalent) of target variable
+    :param feat_ind: index of feature to split by
+    :param boundary: boundary value to split by
+    :return: (x_left, y_left, x_right, y_right) split datasets
     """
     # Split the dataset according to the decision
     x_left = x_in[x_in[:, feat_ind] < boundary, :]
@@ -52,12 +54,13 @@ def split_data_boundary(x_in, y_in, feat_ind, boundary):
 
 def split_node(node_list, cur_node, x_node, y_node, node_conf):
     """
+    Trains a node and adds its successors (if any) to the node traversal list
 
-    :param node_list:
-    :param cur_node:
-    :param x_node:
-    :param y_node:
-    :param node_conf:
+    :param node_list: list of nodes to traverse
+    :param cur_node: node to be trained and split
+    :param x_node: input features for the given node
+    :param y_node: input target variable for the given node
+    :param node_conf: configuration of the given node
     :return:
     """
     # Train the node
@@ -110,8 +113,8 @@ class ClassificationTreeNode(SupervisedModel):
     def predict_one(self, x_vec):
         """
 
-        :param x_vec:
-        :return:
+        :param x_vec: 1-D array of features
+        :return: prediction for the input features vector
         """
         # If either successor is not defined, return the existing return value
         if self.left is None or self.right is None:
@@ -213,10 +216,11 @@ class ClassificationTreeModel(SupervisedModel):
 
     def predict_th(self, x_in, threshold=0.5):
         """
+        Predicts then applies a threshold
 
-        :param x_in:
-        :param threshold:
-        :return:
+        :param x_in: numpy matrix (or equivalent) of features
+        :param threshold: classification threshold. Default=0.5
+        :return: 1-D array of binary predictions
         """
         return np.array(
             [0 if y_pred < threshold else 1 for y_pred in self.predict(x_in)]
@@ -224,8 +228,9 @@ class ClassificationTreeModel(SupervisedModel):
 
     def get_depth(self):
         """
+        Returns the depth of the tree
 
-        :return:
+        :return: tree depth
         """
         depth = 1
 
@@ -245,8 +250,9 @@ class ClassificationTreeModel(SupervisedModel):
 
     def get_n_nodes(self):
         """
+        Returns the number of nodes in the tree
 
-        :return:
+        :return: number of tree nodes
         """
         n_nodes = 0
 

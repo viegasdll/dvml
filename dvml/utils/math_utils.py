@@ -31,11 +31,11 @@ def gini_binary(y_in):
 
 def gini_binary_avg(y_left, y_right):
     """
-    Need to add the case when one is empty
+    Average gini impurity after a split
 
-    :param y_left:
-    :param y_right:
-    :return:
+    :param y_left: 1-D numpy array (or equivalent)
+    :param y_right: 1-D numpy array (or equivalent)
+    :return: average gini impurity
     """
     if y_left is None or len(y_left) == 0:
         return gini_binary(y_right)
@@ -55,10 +55,10 @@ def gini_binary_split(x_in, y_in, boundary):
     """
     Computes the gini impurity of a split along a given boundary
 
-    :param x_in:
-    :param y_in:
-    :param boundary:
-    :return:
+    :param x_in: array with values for a given feature
+    :param y_in: target variable array
+    :param boundary: boundary value for the split
+    :return: the average gini impurity resulting from the split
     """
     y_left = [y_val for (x_val, y_val) in zip(x_in, y_in) if x_val < boundary]
     y_right = [y_val for (x_val, y_val) in zip(x_in, y_in) if x_val >= boundary]
@@ -71,8 +71,8 @@ def gini_opt_split(x_in, y_in):
     Tries to find a good split of the data that minimizes gini impurity
     Started with a very naive approach, can improve over time
 
-    :param x_in:
-    :param y_in:
+    :param x_in: numpy matrix (or equivalent) of model features
+    :param y_in: target variable array
     :return: the best boundary found, and the resulting gini impurity
     """
     n_boundaries = 10
