@@ -50,6 +50,31 @@ def split_data_boundary(x_in, y_in, feat_ind, boundary):
     return x_left, y_left, x_right, y_right
 
 
+def split_node(node_list, cur_node, x_node, y_node, node_conf):
+    """
+
+    :param node_list:
+    :param cur_node:
+    :param x_node:
+    :param y_node:
+    :param node_conf:
+    :return:
+    """
+    # Train the node
+    cur_node_out = cur_node.train(x_node, y_node, node_conf)
+
+    if cur_node_out != -1:
+        # The node was not a leaf, create successors
+        node_left = ClassificationTreeNode(depth=cur_node.depth + 1)
+        node_right = ClassificationTreeNode(depth=cur_node.depth + 1)
+        # Attach successors to current node
+        cur_node.left = node_left
+        cur_node.right = node_right
+        # Add successors to node list
+        node_list.append((node_left, cur_node_out[0], cur_node_out[1]))
+        node_list.append((node_right, cur_node_out[2], cur_node_out[3]))
+
+
 class ClassificationTreeNode(SupervisedModel):
     """
     Individual node for a classification tree
@@ -180,19 +205,8 @@ class ClassificationTreeModel(SupervisedModel):
                 "leaf_node": is_leaf,
             }
 
-            # Train the node
-            cur_node_out = cur_node.train(x_node, y_node, node_conf)
-
-            if cur_node_out != -1:
-                # The node was not a leaf, create successors
-                node_left = ClassificationTreeNode(depth=cur_node.depth + 1)
-                node_right = ClassificationTreeNode(depth=cur_node.depth + 1)
-                # Attach successors to current node
-                cur_node.left = node_left
-                cur_node.right = node_right
-                # Add successors to node list
-                node_list.append((node_left, cur_node_out[0], cur_node_out[1]))
-                node_list.append((node_right, cur_node_out[2], cur_node_out[3]))
+            # Train/split the node
+            split_node(node_list, cur_node, x_node, y_node, node_conf)
 
     def predict(self, x_in):
         return self.root_node.predict(x_in)
