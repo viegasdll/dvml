@@ -1,4 +1,11 @@
 
+<a id='changelog-0.4.0'></a>
+# 0.4.0 — 2023-02-11
+
+## Added
+
+- Implemented binary classification tree model.
+
 <a id='changelog-0.3.1'></a>
 # 0.3.1 — 2023-01-28
 
