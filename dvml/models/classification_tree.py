@@ -105,14 +105,9 @@ class ClassificationTreeNode(SupervisedModel):
         # Convert y to a numpy vector
         y_form = np.array(y_train)
 
-        # Check if it's a leaf node. If so, compute a return value
-        if parsed_config["leaf_node"]:
+        # Check if it's a leaf node (or y is constant). If so, compute a return value
+        if parsed_config["leaf_node"] or np.sum(y_form) in [0, len(y_form)]:
             self.return_val = np.mean(y_form)
-            return -1
-
-        # Check if y is all 1s or 0s. If so, compute a return value
-        if np.sum(y_form) == 0 or np.sum(y_form) == len(y_form):
-            self.return_val = y_form[0]
             return -1
 
         # Select the list of features to be tested
