@@ -359,3 +359,13 @@ class TestClassificationTreeModel(unittest.TestCase):
         model.root_node.left.right = ClassificationTreeNode(depth=3)
 
         self.assertEqual(model.get_depth(), 3)
+
+    def test_get_n_nodes(self):
+        model = ClassificationTreeModel()
+
+        self.assertEqual(model.get_n_nodes(), 1)
+
+        model.root_node.left = ClassificationTreeNode(depth=2)
+        model.root_node.left.right = ClassificationTreeNode(depth=3)
+
+        self.assertEqual(model.get_n_nodes(), 3)

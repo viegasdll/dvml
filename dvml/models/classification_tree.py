@@ -246,3 +246,24 @@ class ClassificationTreeModel(SupervisedModel):
                 node_list.append(cur_node.right)
 
         return depth
+
+    def get_n_nodes(self):
+        """
+
+        :return:
+        """
+        n_nodes = 0
+
+        node_list = [self.root_node]
+
+        while len(node_list) > 0:
+            cur_node = node_list.pop()
+
+            n_nodes += 1
+
+            if cur_node.left is not None:
+                node_list.append(cur_node.left)
+            if cur_node.right is not None:
+                node_list.append(cur_node.right)
+
+        return n_nodes
