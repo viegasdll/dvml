@@ -329,6 +329,7 @@ class TestClassificationTreeModel(unittest.TestCase):
 
         y_pred = model.predict(x_train)
 
+        # The model should overfit completely
         assert_array_equal(y_pred, y_train)
 
     def test_e2e_max_depth_3(self):
@@ -349,6 +350,8 @@ class TestClassificationTreeModel(unittest.TestCase):
         acc_pred = accuracy(y_train, y_pred)
 
         self.assertGreater(acc_pred, 0.9)
+        self.assertLessEqual(model.get_depth(), 3)
+        self.assertLessEqual(model.get_n_nodes(), 7)
 
     def test_get_depth(self):
         model = ClassificationTreeModel()

@@ -218,13 +218,9 @@ class ClassificationTreeModel(SupervisedModel):
         :param threshold:
         :return:
         """
-
-        def apply_th(y_val):
-            if y_val < threshold:
-                return 0
-            return 1
-
-        return np.array([apply_th(y_pred) for y_pred in self.predict(x_in)])
+        return np.array(
+            [0 if y_pred < threshold else 1 for y_pred in self.predict(x_in)]
+        )
 
     def get_depth(self):
         """
