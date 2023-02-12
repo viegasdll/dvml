@@ -125,7 +125,6 @@ class ClassificationTreeNode(SupervisedModel):
         return self.right.predict_one(x_vec)
 
     def train(self, x_train, y_train, conf: dict = None):
-
         # Parse config
         parsed_config = parse_config(conf, self.DEFAULT_CONF)
         # Convert x_in to a numpy array
@@ -181,7 +180,6 @@ class ClassificationTreeModel(SupervisedModel):
     def train(
         self, x_train, y_train, conf: dict = None
     ):  # pylint: disable=too-many-locals
-
         # Parse config
         parsed_config = parse_config(conf, self.DEFAULT_CONF)
         # Convert x_in to a numpy array
