@@ -349,3 +349,13 @@ class TestClassificationTreeModel(unittest.TestCase):
         acc_pred = accuracy(y_train, y_pred)
 
         self.assertGreater(acc_pred, 0.9)
+
+    def test_get_depth(self):
+        model = ClassificationTreeModel()
+
+        self.assertEqual(model.get_depth(), 1)
+
+        model.root_node.left = ClassificationTreeNode(depth=2)
+        model.root_node.left.right = ClassificationTreeNode(depth=3)
+
+        self.assertEqual(model.get_depth(), 3)

@@ -225,3 +225,24 @@ class ClassificationTreeModel(SupervisedModel):
             return 1
 
         return np.array([apply_th(y_pred) for y_pred in self.predict(x_in)])
+
+    def get_depth(self):
+        """
+
+        :return:
+        """
+        depth = 1
+
+        node_list = [self.root_node]
+
+        while len(node_list) > 0:
+            cur_node = node_list.pop()
+
+            depth = max(depth, cur_node.depth)
+
+            if cur_node.left is not None:
+                node_list.append(cur_node.left)
+            if cur_node.right is not None:
+                node_list.append(cur_node.right)
+
+        return depth
