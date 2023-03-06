@@ -42,10 +42,10 @@ def bootstrap(x_in, y_in, n_samples=None):
     """
     Creates a bootstrap sample for model training
 
-    :param n_samples:
-    :param x_in:
-    :param y_in:
-    :return:
+    :param n_samples: desired output size, can be smaller or larger than input
+    :param x_in: numpy array (or equivalent) with the input features
+    :param y_in: 1-D numpy array with the input target variable
+    :return: x_out, y_out - bootstrap samples with desired size
     """
     if n_samples is None:
         n_samples = len(y_in)
