@@ -1,4 +1,11 @@
 
+<a id='changelog-0.5.0'></a>
+# 0.5.0 — 2023-03-05
+
+## Added
+
+- Implemented random forest classifier using the package's decision tree model.
+
 <a id='changelog-0.4.0'></a>
 # 0.4.0 — 2023-02-11
 
