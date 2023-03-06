@@ -1,6 +1,8 @@
 """
 Utility functions to handle data
 """
+import random
+
 import numpy as np
 
 
@@ -34,3 +36,27 @@ def parse_x_ct(x_in):
         x_form = x_form.reshape([1, len(x_form)])
 
     return x_form
+
+
+def bootstrap(x_in, y_in, n_samples=None):
+    """
+    Creates a bootstrap sample for model training
+
+    :param n_samples:
+    :param x_in:
+    :param y_in:
+    :return:
+    """
+    if n_samples is None:
+        n_samples = len(y_in)
+
+    x_out = np.zeros([n_samples, x_in.shape[1]])
+    y_out = np.zeros(n_samples)
+
+    for int_out in range(n_samples):
+        ind_in = random.randint(0, n_samples - 1)
+
+        x_out[int_out] = x_in[ind_in]
+        y_out[int_out] = y_in[ind_in]
+
+    return x_out, y_out
